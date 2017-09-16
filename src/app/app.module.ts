@@ -1,7 +1,7 @@
 //Angular Imports
-import { BrowserModule }  from '@angular/platform-browser';
 import { NgModule }       from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { BrowserModule }  from '@angular/platform-browser';
+import { FormsModule }    from '@angular/forms';
 
 import { NgbModule }      from '@ng-bootstrap/ng-bootstrap';
 
@@ -9,11 +9,11 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
-//Module's Bootstrapped Component
-import { AppComponent }   from './app.component'
-
 //Project Modules
 import { RoutingModule }   from './modules/routing/routing.module'
+
+//Module's Bootstrapped Component
+import { AppComponent }   from './app.component'
 
 //Project Components
 import { AComponent }     from './components/a/a.component';
