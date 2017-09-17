@@ -20,11 +20,11 @@ import { ShiftDate } from '../classes/shift-date';
 @Injectable()
 export class ShiftTradeDataService {
 
-  private userRef: string = '/users';
-  private listedShiftRef: string = '/shifts';
-  private requestedTradeRef: string = '/requested-trades';
-  private acceptedTradeRef: string = '/accepted-trades';
-  private appRef: string = '/app';
+  private userRef: string = 'users';
+  private listedShiftRef: string = 'shifts';
+  private requestedTradeRef: string = 'requested-trades';
+  private acceptedTradeRef: string = 'accepted-trades';
+  private appRef: string = 'app';
 
   //declarations for firebase auth usage
   private user: Observable<firebase.User>; //allows us to access the current user state
@@ -37,8 +37,19 @@ export class ShiftTradeDataService {
   private latestListedShifts: any[];
 
   private requestedTrades: FirebaseListObservable<any[]>; //stores the firebase list
+  private requestedTradesSub: Subscription;
+  private latestRequestedTrades: any[];
+
+
   private acceptedTrades: FirebaseListObservable<any[]>; //stores the firebase list
+  private acceptedTradesSub: Subscription;
+  private latestAcceptedTrades: any[];
+
+
   private appUsers: FirebaseListObservable<any[]>; //stores the firebase list
+  private appUsersSub: Subscription;
+  private latestAppUsers: any[];
+
 
   /**
    * Shift Trade Data Service constructor
@@ -47,21 +58,23 @@ export class ShiftTradeDataService {
    * @return {[type]}                            [description]
    */
   constructor(private afAuth: AngularFireAuth, private afData: AngularFireDatabase) {
-    this.user = this.afAuth.authState;
     this.subscribeToAuthUser();
 
-    this.requestedTrades = null;
-    this.acceptedTrades = null;
-    this.appUsers = null;
-
-    this.listedShifts = afData.list(this.listedShiftRef);
     this.subscribeToListedShifts();
+
+    this.subscribeToRequestedTrades();
+
+    this.subscribeToAcceptedTrades();
+
+    this.subscribeToAppUsers();
   }
 
   /**
    * Function subscribes to Observable<firebase.User>, updates latestUser whenever a new user is generated.
    */
   private subscribeToAuthUser(): void {
+    this.user = this.afAuth.authState;
+
     this.userSub = this.user.subscribe(u => {
       this.latestUser = u;
     });
@@ -71,9 +84,51 @@ export class ShiftTradeDataService {
    * [desc]
    */
   private subscribeToListedShifts(): void {
+    this.listedShifts = this.afData.list(`/${this.listedShiftRef}`);
+
     this.listedShiftsSub = this.listedShifts.subscribe(lShift => {
       this.latestListedShifts = lShift;
+      console.log(`Listed Shifts:`);
       console.log(this.latestListedShifts);
+    });
+  }
+
+  /**
+   * [desc]
+   */
+  private subscribeToRequestedTrades(): void {
+    this.requestedTrades = this.afData.list(`/${this.requestedTradeRef}`);
+
+    this.requestedTradesSub = this.requestedTrades.subscribe(rTrade => {
+      this.latestRequestedTrades = rTrade;
+      console.log(`Requested Trades:`);
+      console.log(this.latestRequestedTrades);
+    });
+  }
+
+  /**
+   * [desc]
+   */
+  private subscribeToAcceptedTrades(): void {
+    this.acceptedTrades = this.afData.list(`/${this.acceptedTradeRef}`);
+
+    this.acceptedTradesSub = this.acceptedTrades.subscribe(aTrade => {
+      this.latestAcceptedTrades = aTrade;
+      console.log(`Accepted Trades:`);
+      console.log(this.latestAcceptedTrades);
+    });
+  }
+
+  /**
+   * [desc]
+   */
+  private subscribeToAppUsers(): void {
+    this.appUsers = this.afData.list(`/${this.userRef}`);
+
+    this.appUsersSub = this.appUsers.subscribe(aUsr => {
+      this.latestAppUsers = aUsr;
+      console.log(`App Users:`);
+      console.log(this.latestAppUsers);
     });
   }
 
@@ -158,18 +213,40 @@ export class ShiftTradeDataService {
    * @param  {string}        uid  [description]
    * @return {Promise<void>}      [description]
    */
-  public createListedShift(date: ShiftDate, uid: string): Promise<void> {
+  public createListedShift(date: ShiftDate, uid: string): void {
     try {
-      return <Promise<void>> this.afData.object(`${this.listedShiftRef}/${date.toString()}/${this.latestUser.uid}`).set(true);
+      
+      let update = {};
+
+      this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).subscribe(s => {
+        if (s.$exists()) {
+          throw new Error('Shift already listed for this user');
+        } else {
+          //update the shift listing
+          update[`${this.listedShiftRef}/${date.toString()}/${this.latestUser.uid}`] = true;
+          //update the user's shifts
+          update[`${this.userRef}/${this.latestUser.uid}/shifts/${date.toString()}`] = true;
+          //run the update on firebase
+          this.afData.object('/').update(update).catch(e => console.log(`Error creating listed shift - ${e}`) );
+        }
+      })
+
     } catch (e) {
-      console.log(e);
-    } finally {
-      return null;
+      console.log(`Error creating listed shift - ${e}`)
+    }
+  }
+
+  public removeListedShift(date: ShiftDate, uid: string): Promise<void> {
+    try {
+
+    } catch (e) {
+      console.log(`Error removing listed shift - ${e}`);
+      return null
     }
   }
 
   public writeUserData(userId, name, email, phone): void {
-    firebase.database().ref(this.userRef +'/'+ userId).set({
+    firebase.database().ref(`/${this.userRef}/${userId}`).set({
       name: name,
       email: email,
       phone: phone
