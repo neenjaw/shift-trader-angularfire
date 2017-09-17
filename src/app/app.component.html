@@ -30,3 +30,8 @@
 
   <button (click)="logout()">Logout</button>
 </div>
+<div *ngIf="(user | async)?.uid">
+  <input #date placeholder="YYYY-MM-DD-[D/N]" (keyup)="0">
+  <button (click)="newShift(date.value)">New Shift</button>
+  <p>{{date.value}}</p>
+</div>

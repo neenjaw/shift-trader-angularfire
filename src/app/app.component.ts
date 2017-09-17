@@ -19,32 +19,36 @@ export class AppComponent {
 
   // THIS IS A TEST TO MAKE SURE THE CODE IS WORKING WITH USING THE SERVICE
 
-  constructor(private shiftTradeDataService: ShiftTradeDataService) {
-    this.user = shiftTradeDataService.currentUserObservable();
+  constructor(private stData: ShiftTradeDataService) {
+    this.user = stData.currentUserObservable();
   }
 
   public isAnonymous(): boolean {
-    return this.shiftTradeDataService.currentUserAnonymous();
+    return this.stData.currentUserAnonymous();
   }
 
   public getUserId(): string {
-    return this.shiftTradeDataService.currentUserId();
+    return this.stData.currentUserId();
   }
 
   public getUserName(): string {
-    return this.shiftTradeDataService.currentUserDisplayName();
+    return this.stData.currentUserDisplayName();
   }
 
   public anonLogin(): void {
-    this.shiftTradeDataService.anonymousLogin();
+    this.stData.anonymousLogin();
   }
 
   public emailLogin(email: string, password: string): void {
-    this.shiftTradeDataService.emailLogin(email, password);
+    this.stData.emailLogin(email, password);
   }
 
   public logout(): void {
-    this.shiftTradeDataService.logout();
+    this.stData.logout();
+  }
+
+  public listNewShift(date: string) {
+    this.stData.createListedShift(date, this.stData.currentUserId());
   }
 
   ngOnInit() {

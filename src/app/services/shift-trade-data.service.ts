@@ -7,11 +7,14 @@ import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/toPromise';
 
 //AngularFire2 Import Structure
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
+import * as moment from 'moment';
+
 import { User as ShiftTradeUser } from '../classes/user';
+import { Shift as ShiftTradeShift } from '../classes/shift';
 
 @Injectable()
 export class ShiftTradeDataService {
@@ -148,15 +151,31 @@ export class ShiftTradeDataService {
     return this.latestListedShifts;
   }
 
-  //TODO create the function to insert the data to the firebase database
-  public createListedShift(date: string, uid: string): Promise<boolean> {
-    return
+  /**
+   * [createListedShift description]
+   * @param  {string}        date [description]
+   * @param  {string}        uid  [description]
+   * @return {Promise<void>}      [description]
+   */
+  public createListedShift(date: string, uid: string): Promise<void> {
+    try {
+      let errMsg: string = 'Date not formatted properly (YYYY-MM-DD-[D/N])';
+      let splitDate: Array<string> = date.split('-');
+
+      //check to make sure the date is formatted correctly for entry to the database
+      if ( (splitDate.length !== 4) && // must have 4 items {YYYY, MM, DD, [D/N]}
+           ((splitDate[3] !== 'D') || (splitDate[3] !== 'N')) && //last item must be either a D or an N
+           (moment(`${splitDate[0]}/${splitDate[1]}/${splitDate[2]}`, 'YYYY/MM/DD', true).isValid()) ) { //must be a valid date
+        throw new Error(errMsg);
+      }
+
+      return <Promise<void>> this.afData.object(`${this.listedShiftRef}/${date}/${this.latestUser.uid}`).set(true);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      return null;
+    }
   }
-
-
-
-
-
 
   public writeUserData(userId, name, email, phone): void {
     firebase.database().ref(this.userRef +'/'+ userId).set({
@@ -167,3 +186,16 @@ export class ShiftTradeDataService {
   }
 
 }
+
+// let foo: FirebaseObjectObservable<any> = this.afData.object(`${this.listedShiftRef}/${date}`);
+//
+// foo.subscribe(x => {
+//    console.log(x);
+//   if (x.$exists()){
+//         console.log(`FOUND`,x);
+//   } else {
+//         console.log(`NOT FOUND`);
+//   }
+// });
+//
+// foo.set({ [`jjjjjjj${this.latestUser.uid}`] : true})
