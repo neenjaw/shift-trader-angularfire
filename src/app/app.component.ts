@@ -16,17 +16,19 @@ import { ShiftTradeDataService } from './services/shift-trade-data.service'
 export class AppComponent {
   title = 'app';
   user: Observable<firebase.User>;
-  userId: string;
 
   // THIS IS A TEST TO MAKE SURE THE CODE IS WORKING WITH USING THE SERVICE
 
   constructor(private shiftTradeDataService: ShiftTradeDataService) {
-    this.user = shiftTradeDataService.getUser();
-    //this.userId = shiftTradeDataService.getUserId();
+    this.user = shiftTradeDataService.currentUserObservable();
   }
 
   public isAnonymous(): boolean {
     return this.shiftTradeDataService.currentUserAnonymous();
+  }
+
+  public getUserId(): string {
+    return this.shiftTradeDataService.currentUserId();
   }
 
   public getUserName(): string {
@@ -35,6 +37,10 @@ export class AppComponent {
 
   public anonLogin(): void {
     this.shiftTradeDataService.anonymousLogin();
+  }
+
+  public emailLogin(email: string, password: string): void {
+    this.shiftTradeDataService.emailLogin(email, password);
   }
 
   public logout(): void {

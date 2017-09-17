@@ -4,10 +4,29 @@
     Welcome to {{title}}!
   </h1>
 </div>
-<div>
-  <h2 *ngIf="!(user | async)?.uid">Log in</h2>
-  <h2 *ngIf="(user | async)?.uid">Hi {{ getUserName() }}!</h2>
+<div *ngIf="!(user | async)?.uid">
+  <h2>Log in</h2>
 
-  <button (click)="anonLogin()" *ngIf="!(user | async)?.uid">Anonymous Login</button>
-  <button (click)="logout()" *ngIf="(user | async)?.uid">Logout</button>
+  <button (click)="anonLogin()">Anonymous Login</button>
+
+  <div>
+    <input #email placeholder="email" (keyup)="0">
+    <input #password placeholder="password" (keyup)="0">
+    <button (click)="emailLogin(email.value, password.value)">Email/Password Login</button>
+
+    <p>{{email.value}}</p>
+    <p>{{password.value}}</p>
+  </div>
+</div>
+<div *ngIf="(user | async)?.uid">
+  <h2>Hi {{ getUserName() }}!</h2>
+  <h5>User Id: {{ getUserId() }}</h5>
+  <h5>Is anon: {{ (user | async)?.isAnonymous }}</h5>
+  <h5>email: {{ (user | async)?.email }}</h5>
+  <h5>verified: {{ (user | async)?.emailVerified }}</h5>
+  <h5>Ph Number: {{ (user | async)?.phoneNumber }}</h5>
+  <h5>display name: {{ (user | async)?.displayName }}</h5>
+  <h5>User Id: {{ (user | async)?.uid }}</h5>
+
+  <button (click)="logout()">Logout</button>
 </div>
