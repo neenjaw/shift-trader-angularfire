@@ -7,6 +7,7 @@ import 'rxjs/add/operator/toPromise';
 import * as firebase from 'firebase/app';
 
 import { ShiftTradeDataService } from './services/shift-trade-data.service'
+import { ShiftDate } from './classes/shift-date';
 
 @Component({
   selector: 'app-root',
@@ -48,7 +49,9 @@ export class AppComponent {
   }
 
   public listNewShift(date: string) {
-    this.stData.createListedShift(date, this.stData.currentUserId());
+    let d: string[] = date.split('-');
+
+    this.stData.createListedShift(new ShiftDate(`${d[0]}-${d[1]}-${d[2]}`,d[3]), this.stData.currentUserId());
   }
 
   ngOnInit() {

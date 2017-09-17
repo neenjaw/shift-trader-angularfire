@@ -13,8 +13,9 @@ import * as firebase from 'firebase/app';
 
 import * as moment from 'moment';
 
-import { User as ShiftTradeUser } from '../classes/user';
-import { Shift as ShiftTradeShift } from '../classes/shift';
+import { User as ShiftUser } from '../classes/user';
+import { Shift } from '../classes/shift';
+import { ShiftDate } from '../classes/shift-date';
 
 @Injectable()
 export class ShiftTradeDataService {
@@ -157,19 +158,9 @@ export class ShiftTradeDataService {
    * @param  {string}        uid  [description]
    * @return {Promise<void>}      [description]
    */
-  public createListedShift(date: string, uid: string): Promise<void> {
+  public createListedShift(date: ShiftDate, uid: string): Promise<void> {
     try {
-      let errMsg: string = 'Date not formatted properly (YYYY-MM-DD-[D/N])';
-      let splitDate: Array<string> = date.split('-');
-
-      //check to make sure the date is formatted correctly for entry to the database
-      if ( (splitDate.length !== 4) && // must have 4 items {YYYY, MM, DD, [D/N]}
-           ((splitDate[3] !== 'D') || (splitDate[3] !== 'N')) && //last item must be either a D or an N
-           (moment(`${splitDate[0]}/${splitDate[1]}/${splitDate[2]}`, 'YYYY/MM/DD', true).isValid()) ) { //must be a valid date
-        throw new Error(errMsg);
-      }
-
-      return <Promise<void>> this.afData.object(`${this.listedShiftRef}/${date}/${this.latestUser.uid}`).set(true);
+      return <Promise<void>> this.afData.object(`${this.listedShiftRef}/${date.toString()}/${this.latestUser.uid}`).set(true);
     } catch (e) {
       console.log(e);
     } finally {
