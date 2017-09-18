@@ -1,8 +1,8 @@
-import { User } from './user';
+import { ShiftUser } from './shift-user';
 
 export class TradeRecord {
-  readonly askingUser: User;
-  readonly offeringUser: User;
+  readonly askingUser: ShiftUser;
+  readonly offeringUser: ShiftUser;
   readonly askedDate: Date;
   readonly offeredDate: Date;
 }

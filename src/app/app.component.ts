@@ -15,8 +15,8 @@ import { ShiftDate } from './classes/shift-date';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
-  user: Observable<firebase.User>;
+  title: string = 'app';
+  user: Observable<firebase.User> = null;
 
   // THIS IS A TEST TO MAKE SURE THE CODE IS WORKING WITH USING THE SERVICE
 
@@ -54,6 +54,10 @@ export class AppComponent {
 
   public removeShift(date: string) {
     this.stData.removeListedShift(new ShiftDate(date), this.stData.currentUserId());
+  }
+
+  public requestNewTrade(date: string, ror: string, ree: string, com: string) {
+    this.stData.addRequestedTrade(new ShiftDate(date), ror, ree, com);
   }
 
   ngOnInit() {

@@ -12,9 +12,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
-import * as moment from 'moment';
-
-import { User as ShiftUser } from '../classes/user';
+import { ShiftUser } from '../classes/shift-user';
 import { Shift } from '../classes/shift';
 import { ShiftDate } from '../classes/shift-date';
 
@@ -25,6 +23,7 @@ export class ShiftTradeDataService {
   private listedShiftRef: string = 'shifts';
   private requestedTradeRef: string = 'requested-trades';
   private acceptedTradeRef: string = 'accepted-trades';
+  private declinedTradeRef: string = 'declined-trades';
   private appRef: string = 'app';
 
   //declarations for firebase auth usage
@@ -41,10 +40,13 @@ export class ShiftTradeDataService {
   private requestedTradesSub: Subscription;
   private latestRequestedTrades: any[];
 
-
   private acceptedTrades: FirebaseListObservable<any[]>; //stores the firebase list
   private acceptedTradesSub: Subscription;
   private latestAcceptedTrades: any[];
+
+  private declinedTrades: FirebaseListObservable<any[]>; //stores the firebase list
+  private declinedTradesSub: Subscription;
+  private latestDeclinedTrades: any[];
 
 
   private appUsers: FirebaseListObservable<any[]>; //stores the firebase list
@@ -61,13 +63,21 @@ export class ShiftTradeDataService {
   constructor(private afAuth: AngularFireAuth, private afData: AngularFireDatabase) {
     this.subscribeToAuthUser();
 
+    this.subscribeToAppUsers();
+
     this.subscribeToListedShifts();
 
+
+    //TODO (Re: FirebaseListOberservable branch point) Think about this:
+    // Should these be here and linked to the main branches?
+    // Or! Should they be linked [when the user is logged in] to the
+    // sub-branch for that specific user.  Is there benefit to having
+    // access to all the data?
     this.subscribeToRequestedTrades();
 
     this.subscribeToAcceptedTrades();
 
-    this.subscribeToAppUsers();
+    this.subscribeToDeclinedTrades();
   }
 
   /**
@@ -123,8 +133,21 @@ export class ShiftTradeDataService {
   /**
    * [desc]
    */
-  private subscribeToAppUsers(): void {
-    this.appUsers = this.afData.list(`/${this.userRef}`);
+  private subscribeToDeclinedTrades(): void {
+    this.declinedTrades = this.afData.list(`/${this.declinedTradeRef}`);
+
+    this.declinedTradesSub = this.declinedTrades.subscribe(dTrade => {
+      this.latestDeclinedTrades = dTrade;
+      console.log(`Declined Trades:`);
+      console.log(this.latestDeclinedTrades);
+    });
+  }
+
+  /**
+   * [desc]
+   */
+  private subscribeToAppUsers(): void { this.appUsers =
+  this.afData.list(`/${this.userRef}`);
 
     this.appUsersSub = this.appUsers.subscribe(aUsr => {
       this.latestAppUsers = aUsr;
@@ -226,7 +249,6 @@ export class ShiftTradeDataService {
           throw new Error('Shift already listed for this user');
 
         } else {
-
           //update the shift listing
           update[`${this.listedShiftRef}/${date.toString()}/${this.latestUser.uid}`] = true;
           //update the user's shifts
@@ -271,20 +293,39 @@ export class ShiftTradeDataService {
                   .set(null)
                   .catch(e => { throw e });
 
-              //TODO - remove any requested trades that are not yet accepted
-              /*
-              -find the list of trades
-                -foreach of the trades in the list
-                  -create refused-trades record for the other person
-                    -reason: listed shift removed.
-               */
+              //remove any requested trades that are not yet accepted, create record
+              let declinedRecord = {}; //declare local var
+              let r = this.afData.list(`/${this.requestedTradeRef}/${uid}/${date.toString()}`); //set the location of the list
+
+              //take the first list emitted by the observable
+              // -> subscribe to it with forEach
+              // -> subscription closes automatitcally b/c of take operator
+              //
+              // IDEA This could probably be refactored into a private function to be more DRY
+              r.take(1).forEach(x => {
+                //iterate through the returned array
+                for (let entry of x) {
+                  //create the record to be stored
+                  declinedRecord = { "trade-date" : date.toString(),
+                                     "uid" : uid,
+                                     "reason":"Shift not listed for trade any longer",
+                                     "original-comment":entry.comment
+                                   };
+
+                  //push the record with unique key to destination list
+                  this.afData
+                      .list(`/${this.declinedTradeRef}/${entry.$key}/`)
+                      .push(declinedRecord);
+                }
+              });
+
+              r.remove();
             }
           });
     } catch (e) {
       console.log(`Error removing listed shift - ${e}`);
     }
   }
-<<<<<<< HEAD
 
   /**
    * [addRequestedTrade description]
@@ -310,33 +351,6 @@ export class ShiftTradeDataService {
                   .object(`/${this.requestedTradeRef}/${uidRequestee}/${date.toString()}/${uidRequestor}/comment`)
                   .set(comment);
 
-=======
-
-  /**
-   * [addRequestedTrade description]
-   * @param {ShiftDate} date    [description]
-   * @param {string}    uid     [description]
-   * @param {string}    comment [description]
-   */
-  public addRequestedTrade(date: ShiftDate, uidRequestor: string, uidRequestee:string, comment: string = ''): void {
-    try {
-      //check if the record already exists
-      this.afData
-          .object(`/${this.listedShiftRef}/${date.toString()}/${uidRequestee}`)
-          .take(1)
-          .subscribe(s => {
-            if (!s.$exists()) {
-
-              //if it doesn't exist
-              throw new Error(`Can't ask to trade a shift that doesn't exist.`);
-
-            } else {
-
-              this.afData
-                  .object(`/${this.requestedTradeRef}/${uidRequestee}/${date.toString()}/${uidRequestor}/comment`)
-                  .set(comment);
-
->>>>>>> 374aea79e352f357ca0ec36073c69c60f8ddb70e
             }
           });
     } catch (e) {
@@ -353,7 +367,6 @@ export class ShiftTradeDataService {
    */
   public addUser(userId, name, email, phone): void {
     try {
-<<<<<<< HEAD
       this.afData
           .object(`/${this.userRef}/${userId}`).update({
             "full-name": name,
@@ -361,13 +374,6 @@ export class ShiftTradeDataService {
             "phone": phone
           })
           .catch(e => { throw e; });
-=======
-      this.afData.object(`/${this.userRef}/${userId}`).update({
-        "full-name": name,
-        "email": email,
-        "phone": phone
-      });
->>>>>>> 374aea79e352f357ca0ec36073c69c60f8ddb70e
     } catch (e) {
       console.log(`Error adding user - ${e}`);
     }

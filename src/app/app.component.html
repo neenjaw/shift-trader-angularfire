@@ -31,12 +31,20 @@
   <button (click)="logout()">Logout</button>
 </div>
 <div *ngIf="(user | async)?.uid">
-  <input #date placeholder="YYYY-MM-DD-[D/N]" (keyup)="0">
+  <input #date placeholder="YYYY-MM-DD-[D/N]" value="1987-07-07-D" (keyup)="0">
   <button (click)="listNewShift(date.value)">New Shift</button>
   <p>{{date.value}}</p>
 </div>
 <div *ngIf="(user | async)?.uid">
-  <input #date placeholder="YYYY-MM-DD-[D/N]" (keyup)="0">
+  <input #date placeholder="YYYY-MM-DD-[D/N]" value="1987-07-07-D" (keyup)="0">
   <button (click)="removeShift(date.value)">Remove Shift</button>
+  <p>{{date.value}}</p>
+</div>
+<div *ngIf="(user | async)?.uid">
+  <input #date placeholder="YYYY-MM-DD-[D/N]" value="1987-07-07-D" (keyup)="0">
+  <input #ror value="jdoe" (keyup)="0">
+  <input #ree value="{{(user | async)?.uid}}" (keyup)="0">
+  <input #comment value="comment, oh my comment." (keyup)="0">
+  <button (click)="requestNewTrade(date.value, ror.value, ree.value, comment.value)">Offer to trade</button>
   <p>{{date.value}}</p>
 </div>

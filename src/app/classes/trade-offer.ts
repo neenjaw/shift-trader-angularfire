@@ -1,6 +1,6 @@
-import { User } from './user';
+import { ShiftUser } from './shift-user';
 
 export class TradeOffer {
-  readonly user: User;
+  readonly user: ShiftUser;
   readonly comment: string;
 }

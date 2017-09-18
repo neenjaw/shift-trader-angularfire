@@ -1,6 +1,6 @@
-import { User } from './user';
+import { ShiftUser } from './shift-user';
 
 export class Shift {
   readonly date: Date;
-  readonly users: Array<User>;
+  readonly users: Array<ShiftUser>;
 }
