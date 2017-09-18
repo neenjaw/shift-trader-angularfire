@@ -284,6 +284,7 @@ export class ShiftTradeDataService {
       console.log(`Error removing listed shift - ${e}`);
     }
   }
+<<<<<<< HEAD
 
   /**
    * [addRequestedTrade description]
@@ -309,6 +310,33 @@ export class ShiftTradeDataService {
                   .object(`/${this.requestedTradeRef}/${uidRequestee}/${date.toString()}/${uidRequestor}/comment`)
                   .set(comment);
 
+=======
+
+  /**
+   * [addRequestedTrade description]
+   * @param {ShiftDate} date    [description]
+   * @param {string}    uid     [description]
+   * @param {string}    comment [description]
+   */
+  public addRequestedTrade(date: ShiftDate, uidRequestor: string, uidRequestee:string, comment: string = ''): void {
+    try {
+      //check if the record already exists
+      this.afData
+          .object(`/${this.listedShiftRef}/${date.toString()}/${uidRequestee}`)
+          .take(1)
+          .subscribe(s => {
+            if (!s.$exists()) {
+
+              //if it doesn't exist
+              throw new Error(`Can't ask to trade a shift that doesn't exist.`);
+
+            } else {
+
+              this.afData
+                  .object(`/${this.requestedTradeRef}/${uidRequestee}/${date.toString()}/${uidRequestor}/comment`)
+                  .set(comment);
+
+>>>>>>> 374aea79e352f357ca0ec36073c69c60f8ddb70e
             }
           });
     } catch (e) {
@@ -325,6 +353,7 @@ export class ShiftTradeDataService {
    */
   public addUser(userId, name, email, phone): void {
     try {
+<<<<<<< HEAD
       this.afData
           .object(`/${this.userRef}/${userId}`).update({
             "full-name": name,
@@ -332,6 +361,13 @@ export class ShiftTradeDataService {
             "phone": phone
           })
           .catch(e => { throw e; });
+=======
+      this.afData.object(`/${this.userRef}/${userId}`).update({
+        "full-name": name,
+        "email": email,
+        "phone": phone
+      });
+>>>>>>> 374aea79e352f357ca0ec36073c69c60f8ddb70e
     } catch (e) {
       console.log(`Error adding user - ${e}`);
     }
