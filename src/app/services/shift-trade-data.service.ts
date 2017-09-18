@@ -67,17 +67,9 @@ export class ShiftTradeDataService {
 
     this.subscribeToListedShifts();
 
-
-    //TODO (Re: FirebaseListOberservable branch point) Think about this:
-    // Should these be here and linked to the main branches?
-    // Or! Should they be linked [when the user is logged in] to the
-    // sub-branch for that specific user.  Is there benefit to having
-    // access to all the data?
-    this.subscribeToRequestedTrades();
-
-    this.subscribeToAcceptedTrades();
-
-    this.subscribeToDeclinedTrades();
+    //IDEA -- need to ponder.... do I need all of these latestX objects? I am unsure.
+    //Or should I just pass the observable reference and then treat it as a list in the model/view
+    //I might just be making it more complicated than it should be.
   }
 
   /**
@@ -88,6 +80,33 @@ export class ShiftTradeDataService {
 
     this.userSub = this.user.subscribe(u => {
       this.latestUser = u;
+
+      if (this.authenticated()) {
+        this.subscribeToRequestedTrades(this.latestUser.uid);
+
+        this.subscribeToAcceptedTrades(this.latestUser.uid);
+
+        this.subscribeToDeclinedTrades(this.latestUser.uid);
+      } else {
+        this.unsubscribeToRequestedTrades();
+
+        this.unsubscribeToAcceptedTrades();
+
+        this.unsubscribeToDeclinedTrades();
+      }
+    });
+  }
+
+  /**
+   * [desc]
+   */
+  private subscribeToAppUsers(): void { this.appUsers =
+  this.afData.list(`/${this.userRef}`);
+
+    this.appUsersSub = this.appUsers.subscribe(aUsr => {
+      this.latestAppUsers = aUsr;
+      console.log(`App Users:`);
+      console.log(this.latestAppUsers);
     });
   }
 
@@ -107,8 +126,8 @@ export class ShiftTradeDataService {
   /**
    * [desc]
    */
-  private subscribeToRequestedTrades(): void {
-    this.requestedTrades = this.afData.list(`/${this.requestedTradeRef}`);
+  private subscribeToRequestedTrades(uid: String): void {
+    this.requestedTrades = this.afData.list(`/${this.requestedTradeRef}/${uid}`);
 
     this.requestedTradesSub = this.requestedTrades.subscribe(rTrade => {
       this.latestRequestedTrades = rTrade;
@@ -118,10 +137,22 @@ export class ShiftTradeDataService {
   }
 
   /**
+   * [unsubscribeToRequestedTrades description]
+   */
+  private unsubscribeToRequestedTrades(): void {
+    this.requestedTrades = null;
+
+    this.requestedTradesSub.unsubscribe();
+    this.requestedTrades = null;
+
+    this.latestRequestedTrades = null;
+  }
+
+  /**
    * [desc]
    */
-  private subscribeToAcceptedTrades(): void {
-    this.acceptedTrades = this.afData.list(`/${this.acceptedTradeRef}`);
+  private subscribeToAcceptedTrades(uid: String): void {
+    this.acceptedTrades = this.afData.list(`/${this.acceptedTradeRef}/${uid}`);
 
     this.acceptedTradesSub = this.acceptedTrades.subscribe(aTrade => {
       this.latestAcceptedTrades = aTrade;
@@ -131,10 +162,22 @@ export class ShiftTradeDataService {
   }
 
   /**
+   * [unsubscribeToAcceptedTrades description]
+   */
+  private unsubscribeToAcceptedTrades(): void {
+    this.acceptedTrades = null;
+
+    this.acceptedTradesSub.unsubscribe();
+    this.acceptedTradesSub = null;
+
+    this.latestAcceptedTrades = null;
+  }
+
+  /**
    * [desc]
    */
-  private subscribeToDeclinedTrades(): void {
-    this.declinedTrades = this.afData.list(`/${this.declinedTradeRef}`);
+  private subscribeToDeclinedTrades(uid: String): void {
+    this.declinedTrades = this.afData.list(`/${this.declinedTradeRef}/${uid}`);
 
     this.declinedTradesSub = this.declinedTrades.subscribe(dTrade => {
       this.latestDeclinedTrades = dTrade;
@@ -144,16 +187,15 @@ export class ShiftTradeDataService {
   }
 
   /**
-   * [desc]
+   * [unsubscribeToDeclinedTrades description]
    */
-  private subscribeToAppUsers(): void { this.appUsers =
-  this.afData.list(`/${this.userRef}`);
+  private unsubscribeToDeclinedTrades(): void {
+    this.declinedTrades = null;
 
-    this.appUsersSub = this.appUsers.subscribe(aUsr => {
-      this.latestAppUsers = aUsr;
-      console.log(`App Users:`);
-      console.log(this.latestAppUsers);
-    });
+    this.declinedTradesSub.unsubscribe();
+    this.declinedTradesSub = null;
+
+    this.latestDeclinedTrades = null;
   }
 
   /**
