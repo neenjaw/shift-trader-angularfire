@@ -240,33 +240,99 @@ export class ShiftTradeDataService {
     }
   }
 
+  /**
+   * [removeListedShift description]
+   * @param {ShiftDate} date [description]
+   * @param {string}    uid  [description]
+   */
   public removeListedShift(date: ShiftDate, uid: string): void {
     try {
       //check if the record already exists
-      this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).take(1).subscribe(s => {
-        if (!s.$exists()) {
+      this.afData
+          .object(`/${this.listedShiftRef}/${date.toString()}/${uid}`)
+          .take(1)
+          .subscribe(s => {
+            if (!s.$exists()) {
 
-          //if it doesn't exist
-          throw new Error('Shift not listed for this user');
+              //if it doesn't exist
+              throw new Error('Shift not listed for this user');
 
-        } else {
+            } else {
 
-          this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).set(null).catch(e => { throw e });
-          this.afData.object(`/${this.userRef}/${uid}/shifts/${date.toString()}`).set(null).catch(e => { throw e });
+              //remove the shift from listed shifts
+              this.afData
+                  .object(`/${this.listedShiftRef}/${date.toString()}/${uid}`)
+                  .set(null)
+                  .catch(e => { throw e });
 
-        }
-      });
+              //remove the shift from user's shifts
+              this.afData
+                  .object(`/${this.userRef}/${uid}/shifts/${date.toString()}`)
+                  .set(null)
+                  .catch(e => { throw e });
+
+              //TODO - remove any requested trades that are not yet accepted
+              /*
+              -find the list of trades
+                -foreach of the trades in the list
+                  -create refused-trades record for the other person
+                    -reason: listed shift removed.
+               */
+            }
+          });
     } catch (e) {
       console.log(`Error removing listed shift - ${e}`);
     }
   }
 
-  public writeUserData(userId, name, email, phone): void {
-    firebase.database().ref(`/${this.userRef}/${userId}`).set({
-      name: name,
-      email: email,
-      phone: phone
-    });
+  /**
+   * [addRequestedTrade description]
+   * @param {ShiftDate} date    [description]
+   * @param {string}    uid     [description]
+   * @param {string}    comment [description]
+   */
+  public addRequestedTrade(date: ShiftDate, uidRequestor: string, uidRequestee:string, comment: string = ''): void {
+    try {
+      //check if the record already exists
+      this.afData
+          .object(`/${this.listedShiftRef}/${date.toString()}/${uidRequestee}`)
+          .take(1)
+          .subscribe(s => {
+            if (!s.$exists()) {
+
+              //if it doesn't exist
+              throw new Error(`Can't ask to trade a shift that doesn't exist.`);
+
+            } else {
+
+              this.afData
+                  .object(`/${this.requestedTradeRef}/${uidRequestee}/${date.toString()}/${uidRequestor}/comment`)
+                  .set(comment);
+
+            }
+          });
+    } catch (e) {
+        console.log(`Error creating trade request - ${e}`);
+    }
+  }
+
+  /**
+   * [addUser description]
+   * @param {[type]} userId [description]
+   * @param {[type]} name   [description]
+   * @param {[type]} email  [description]
+   * @param {[type]} phone  [description]
+   */
+  public addUser(userId, name, email, phone): void {
+    try {
+      this.afData.object(`/${this.userRef}/${userId}`).update({
+        "full-name": name,
+        "email": email,
+        "phone": phone
+      });
+    } catch (e) {
+      console.log(`Error adding user - ${e}`);
+    }
   }
 
 }
