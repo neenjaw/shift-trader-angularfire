@@ -5,6 +5,7 @@ import { Headers, Http }  from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/take';
 
 //AngularFire2 Import Structure
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
@@ -213,35 +214,50 @@ export class ShiftTradeDataService {
    * @param  {string}        uid  [description]
    * @return {Promise<void>}      [description]
    */
-  public createListedShift(date: ShiftDate, uid: string): void {
+  public addListedShift(date: ShiftDate, uid: string): void {
     try {
-      
       let update = {};
 
-      this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).subscribe(s => {
+      //check if the record already exists
+      this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).take(1).subscribe(s => {
         if (s.$exists()) {
+
+          //if it exists
           throw new Error('Shift already listed for this user');
+
         } else {
+
           //update the shift listing
           update[`${this.listedShiftRef}/${date.toString()}/${this.latestUser.uid}`] = true;
           //update the user's shifts
           update[`${this.userRef}/${this.latestUser.uid}/shifts/${date.toString()}`] = true;
           //run the update on firebase
-          this.afData.object('/').update(update).catch(e => console.log(`Error creating listed shift - ${e}`) );
+          this.afData.object('/').update(update).catch(e => { throw e });
         }
-      })
-
+      });
     } catch (e) {
       console.log(`Error creating listed shift - ${e}`)
     }
   }
 
-  public removeListedShift(date: ShiftDate, uid: string): Promise<void> {
+  public removeListedShift(date: ShiftDate, uid: string): void {
     try {
+      //check if the record already exists
+      this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).take(1).subscribe(s => {
+        if (!s.$exists()) {
 
+          //if it doesn't exist
+          throw new Error('Shift not listed for this user');
+
+        } else {
+
+          this.afData.object(`/${this.listedShiftRef}/${date.toString()}/${uid}`).set(null).catch(e => { throw e });
+          this.afData.object(`/${this.userRef}/${uid}/shifts/${date.toString()}`).set(null).catch(e => { throw e });
+
+        }
+      });
     } catch (e) {
       console.log(`Error removing listed shift - ${e}`);
-      return null
     }
   }
 
@@ -254,16 +270,3 @@ export class ShiftTradeDataService {
   }
 
 }
-
-// let foo: FirebaseObjectObservable<any> = this.afData.object(`${this.listedShiftRef}/${date}`);
-//
-// foo.subscribe(x => {
-//    console.log(x);
-//   if (x.$exists()){
-//         console.log(`FOUND`,x);
-//   } else {
-//         console.log(`NOT FOUND`);
-//   }
-// });
-//
-// foo.set({ [`jjjjjjj${this.latestUser.uid}`] : true})

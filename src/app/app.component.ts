@@ -49,9 +49,11 @@ export class AppComponent {
   }
 
   public listNewShift(date: string) {
-    let d: string[] = date.split('-');
+    this.stData.addListedShift(new ShiftDate(date), this.stData.currentUserId());
+  }
 
-    this.stData.createListedShift(new ShiftDate(`${d[0]}-${d[1]}-${d[2]}`,d[3]), this.stData.currentUserId());
+  public removeShift(date: string) {
+    this.stData.removeListedShift(new ShiftDate(date), this.stData.currentUserId());
   }
 
   ngOnInit() {
