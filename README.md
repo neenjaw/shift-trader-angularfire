@@ -1,5 +1,11 @@
 # ShiftTraderAngularfire
 
+This is going to be an app for use with staff to find trades for shifts within the work unit.
+
+It uses firebase as a backend nosql db for data persistence between instances.
+
+--
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.3.2.
 
 ## Development server
