@@ -1,0 +1,163 @@
+{
+  "accepted-trades" : {
+    "iC7L02WsubPPyQx8Sl2JdGBzFx73" : {
+      "1969-02-01-D" : {
+        "jsmith" : true,
+        "traded-for" : "1969-02-01-N"
+      }
+    },
+    "jdoe" : {
+      "1969-01-07-N" : {
+        "jsmith" : true,
+        "traded-for" : "1969-01-07-D"
+      }
+    },
+    "jsmith" : {
+      "1969-01-07-D" : {
+        "jdoe" : true,
+        "traded-for" : "1969-01-07-N"
+      },
+      "1969-02-01-N" : {
+        "iC7L02WsubPPyQx8Sl2JdGBzFx73" : true,
+        "traded-for" : "1969-02-01-D"
+      }
+    }
+  },
+  "app" : {
+    "admin" : {
+      "iC7L02WsubPPyQx8Sl2JdGBzFx73" : true,
+      "jsmith" : true
+    },
+    "sign-up-code" : "icu-code"
+  },
+  "declined-trades" : {
+    "jdoe" : {
+      "-KuIpylrlLweFVncSdSx" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIq_J-xggdtqLcr19B" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIrGqgLodd7Gv_khkP" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIrKzLm9WDhEG7WRhp" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIvDy3kpEY3Oj2tRvY" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIxsb5SYtbOaLegcJG" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      },
+      "-KuIxzASrI6O6TrXMJX4" : {
+        "original-comment" : "comment, oh my comment.",
+        "reason" : "Shift not listed for trade any longer",
+        "trade-date" : "1987-07-07-D",
+        "uid" : "iC7L02WsubPPyQx8Sl2JdGBzFx73"
+      }
+    }
+  },
+  "requested-trades" : {
+    "iC7L02WsubPPyQx8Sl2JdGBzFx73" : {
+      "1969-02-05-N" : {
+        "jdoe" : {
+          "comment" : "blah blah"
+        }
+      },
+      "1985-06-06-D" : {
+        "jdoe" : {
+          "comment" : "comment, oh my comment."
+        }
+      }
+    },
+    "jsmith" : {
+      "1969-01-02-N" : {
+        "jdoe" : {
+          "comment" : "Here's my shifts: but call me and I'm sure we can work something out"
+        },
+        "pparker" : {
+          "comment" : "Call me, I dont have any specific trades I want, but can help you"
+        }
+      }
+    }
+  },
+  "shifts" : {
+    "1969-01-01-D" : {
+      "jdoe" : true,
+      "jsmith" : true
+    },
+    "1969-01-02-D" : {
+      "jdoe" : true
+    },
+    "1969-01-02-N" : {
+      "jsmith" : true
+    },
+    "1969-03-01-D" : {
+      "jdoe" : true
+    },
+    "1984-03-01-D" : {
+      "iC7L02WsubPPyQx8Sl2JdGBzFx73" : true
+    },
+    "1985-05-05-D" : {
+      "iC7L02WsubPPyQx8Sl2JdGBzFx73" : true
+    },
+    "1985-06-06-D" : {
+      "iC7L02WsubPPyQx8Sl2JdGBzFx73" : true
+    }
+  },
+  "users" : {
+    "iC7L02WsubPPyQx8Sl2JdGBzFx73" : {
+      "email" : "tim.austin0@gmail.com",
+      "full-name" : "Tim Austin",
+      "phone" : "403-828-6590",
+      "shifts" : {
+        "1969-02-05-N" : true,
+        "1984-03-01-D" : true,
+        "1985-05-05-D" : true,
+        "1985-06-06-D" : true
+      }
+    },
+    "jdoe" : {
+      "email" : "user2@gmail.com",
+      "full-name" : "Jane Doe",
+      "phone" : "403-555-5555",
+      "shifts" : {
+        "1969-01-01-D" : true,
+        "1969-01-02-N" : true
+      }
+    },
+    "jsmith" : {
+      "email" : "user1@gmail.com",
+      "full-name" : "John Smith",
+      "phone" : "403-555-5555",
+      "shifts" : {
+        "1969-01-01-D" : true,
+        "1969-01-02-N" : true
+      }
+    },
+    "pparker" : {
+      "email" : "user3@gmail.com",
+      "full-name" : "Peter Parker",
+      "phone" : "403-555-5555"
+    }
+  }
+}

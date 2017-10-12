@@ -16,10 +16,10 @@ import { RoutingModule }   from './modules/routing/routing.module'
 import { AppComponent }   from './app.component'
 
 //Project Components
-import { AComponent }     from './components/a/a.component';
+import { AComponent }     from './components/a/a.component'; //test component, blank, TODO get rid of later
 
 //Project Pipes
-import { BPipe }          from './pipes/b.pipe';
+import { BPipe }          from './pipes/b.pipe'; //test pipe, blank, TODO get rid of later
 
 //Project Services
 import { ShiftTradeDataService } from './services/shift-trade-data.service'
@@ -35,8 +35,8 @@ export const firebaseConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    AComponent,
-    BPipe
+    AComponent, //test component, blank, TODO get rid of later
+    BPipe //test pipe, blank, TODO get rid of later
   ],
   imports: [
     BrowserModule,

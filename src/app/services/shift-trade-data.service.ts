@@ -56,8 +56,8 @@ export class ShiftTradeDataService {
 
   /**
    * Shift Trade Data Service constructor
-   * @param  {AngularFireAuth}     privateafAuth dependency injection
-   * @param  {AngularFireDatabase} privateafData dependency injection
+   * @param  {AngularFireAuth}     privateafAuth dependency injection of the Auth Service
+   * @param  {AngularFireDatabase} privateafData dependency injection of the Database service
    * @return {[type]}                            [description]
    */
   constructor(private afAuth: AngularFireAuth, private afData: AngularFireDatabase) {
@@ -67,9 +67,11 @@ export class ShiftTradeDataService {
 
     this.subscribeToListedShifts();
 
-    //IDEA -- need to ponder.... do I need all of these latestX objects? I am unsure.
+    //IDEA -- need to ponder.... do I need all of these latest__X__ objects? I am unsure.
     //Or should I just pass the observable reference and then treat it as a list in the model/view
-    //I might just be making it more complicated than it should be.
+    //I might just be making it more complicated than it should be and maybe it's okay to let the
+    //other components be aware of the existence of the firebase db, but leave it to this service to
+    //do the backend work...
   }
 
   /**
@@ -275,9 +277,9 @@ export class ShiftTradeDataService {
 
   /**
    * [createListedShift description]
-   * @param  {string}        date [description]
-   * @param  {string}        uid  [description]
-   * @return {Promise<void>}      [description]
+   * @param  {ShiftDate}  date  ShiftDate object containing the information required to list the shift for trade
+   * @param  {string}     uid   the uid of the person listing the shift for trade
+   * @return {void}
    */
   public addListedShift(date: ShiftDate, uid: string): void {
     try {
@@ -336,7 +338,7 @@ export class ShiftTradeDataService {
                   .catch(e => { throw e });
 
               //remove any requested trades that are not yet accepted, create record
-              let declinedRecord = {}; //declare local var
+              let declinedRecord = {};
               let r = this.afData.list(`/${this.requestedTradeRef}/${uid}/${date.toString()}`); //set the location of the list
 
               //take the first list emitted by the observable
