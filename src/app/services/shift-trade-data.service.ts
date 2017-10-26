@@ -72,6 +72,8 @@ export class ShiftTradeDataService {
     //I might just be making it more complicated than it should be and maybe it's okay to let the
     //other components be aware of the existence of the firebase db, but leave it to this service to
     //do the backend work...
+
+    //FIXME This is all broken with the newest version, need to read how to migrate this
   }
 
   /**
